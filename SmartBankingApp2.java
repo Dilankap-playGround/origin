@@ -179,10 +179,11 @@ public class SmartBankingApp2 {
                     break;
                 case DEPOSIT:
                     String accountNumber;
-                    String accountholdername="";
-                    String accountBalance="";
-                    String depositAmount="";
-                    double depositAmountDouble;
+                    String accountholdername = "";
+                    String accountBalance = "";
+                    String depositAmount = "";
+                    double depositAmountDouble = 0;
+                    int customerindex = -1;
                     loop3: do {
                         valid = true;
                         System.out.print("\tEnter A/C No: ");
@@ -250,8 +251,9 @@ public class SmartBankingApp2 {
                         }
                         for (int j = 0; j < customers.length; j++) {
                             if (accountNumber.equals(customers[j][0])) {
-                                accountholdername=customers[j][1];
-                                accountBalance=customers[j][2];
+                                accountholdername = customers[j][1];
+                                accountBalance = customers[j][2];
+                                customerindex = j;
                                 valid = true;
                                 break;
                             } else {
@@ -271,13 +273,12 @@ public class SmartBankingApp2 {
                         }
 
                     } while (!valid);
-                    System.out.printf("\tName: %s\n",accountholdername);
-                    System.out.printf("\tCurrent Balance: Rs.%,.2f\n",Double.parseDouble(accountBalance));
-                    loop4:
-                    do {
+                    System.out.printf("\tName: %s\n", accountholdername);
+                    System.out.printf("\tCurrent Balance: Rs.%,.2f\n", Double.parseDouble(accountBalance));
+                    loop4: do {
                         valid = true;
                         System.out.print("\tDeposit Amount: ");
-                        depositAmount=SCANNER.nextLine().strip();
+                        depositAmount = SCANNER.nextLine().strip();
                         if (depositAmount.length() > 4) {
                             for (int j = 0; j < depositAmount.length() - 3; j++) {
                                 if (!Character.isDigit(depositAmount.charAt(j))) {
@@ -327,9 +328,23 @@ public class SmartBankingApp2 {
                                 }
                             }
                         }
+                        customers[customerindex][2] = Double
+                                .toString(Double.parseDouble(customers[customerindex][2]) + depositAmountDouble);
+                        System.out.printf("\tNew Account Balance: Rs%,.2f\n",
+                                Double.parseDouble(customers[customerindex][2]));
+                        System.out.println();
+                        System.out.printf(SUCCESS_MSG,
+                                String.format("Amount has been Deposited successfully"));
+                        System.out.print("\tDo you want to deposit again (Y/n)? ");
+                        if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                            screen=DEPOSIT;
+                            continue;
+                        }
+
+                        screen = DASHBOARD;
+                        break;
 
                     } while (!valid);
-
 
             }
 
