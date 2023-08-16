@@ -171,7 +171,7 @@ public class SmartBankingApp2 {
 
                     System.out.println();
                     System.out.printf(SUCCESS_MSG,
-                    String.format("%s:%s has been Created successfully", id, name));
+                            String.format("%s:%s has been Created successfully", id, name));
                     System.out.print("\tDo you want to continue adding (Y/n)? ");
                     if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
                         continue;
@@ -179,12 +179,16 @@ public class SmartBankingApp2 {
                     break;
                 case DEPOSIT:
                     String accountNumber;
+                    String accountholdername="";
+                    String accountBalance="";
+                    String depositAmount="";
+                    double depositAmountDouble;
                     loop3: do {
                         valid = true;
                         System.out.print("\tEnter A/C No: ");
                         accountNumber = SCANNER.nextLine().toUpperCase().strip();
                         if (customers.length == 0) {
-                            System.out.printf(ERROR_MSG, "No Accounts has been created to Depoit");
+                            System.out.printf(ERROR_MSG, "No Accounts has been found");
                             System.out.println("Do you want to create an Account?(y/n)");
                             if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
                                 valid = false;
@@ -196,29 +200,58 @@ public class SmartBankingApp2 {
                         }
                         if (accountNumber.isBlank()) {
                             System.out.printf(ERROR_MSG, "Account Number can't be empty");
-                            valid = false;
-                            continue;
+                            System.out.print("\tDo you Want to try agin?(y/n)");
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                valid = false;
+                                continue;
+                            } else {
+                                valid = false;
+                                continue loop1;
+                            }
+
                         }
                         if (accountNumber.length() != 9) {
                             System.out.printf(ERROR_MSG, "Invalid Account Number");
-                            valid = false;
-                            continue;
+                            System.out.print("\tDo you Want to try agin?(y/n)");
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                valid = false;
+                                continue;
+                            } else {
+                                valid = false;
+                                continue loop1;
+                            }
+
                         }
                         if (!accountNumber.startsWith("SDB-")) {
                             System.out.printf(ERROR_MSG, "Invalid Account Number");
-                            valid = false;
-                            continue;
+                            System.out.print("\tDo you Want to try agin?(y/n)");
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                valid = false;
+                                continue;
+                            } else {
+                                valid = false;
+                                continue loop1;
+                            }
+
                         }
                         for (int j = 4; j < accountNumber.length(); j++) {
                             if (!Character.isDigit(accountNumber.charAt(j))) {
                                 System.out.printf(ERROR_MSG, "Invalid Account Number");
-                                valid = false;
-                                continue loop3;
+                                System.out.print("\tDo you Want to try agin?(y/n)");
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;
+                                } else {
+                                    valid = false;
+                                    continue loop1;
+                                }
 
                             }
                         }
                         for (int j = 0; j < customers.length; j++) {
                             if (accountNumber.equals(customers[j][0])) {
+                                accountholdername=customers[j][1];
+                                accountBalance=customers[j][2];
                                 valid = true;
                                 break;
                             } else {
@@ -227,12 +260,76 @@ public class SmartBankingApp2 {
                         }
                         if (!valid) {
                             System.out.printf(ERROR_MSG, "You have no account in this account number");
-                        } else {
-                            System.out.println("Account validation Complete");
-                            screen = DASHBOARD;
+                            System.out.print("\tDo you Want to try agin?(y/n)");
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                valid = false;
+                                continue;
+                            } else {
+                                valid = false;
+                                continue loop1;
+                            }
                         }
 
                     } while (!valid);
+                    System.out.printf("\tName: %s\n",accountholdername);
+                    System.out.printf("\tCurrent Balance: Rs.%,.2f\n",Double.parseDouble(accountBalance));
+                    loop4:
+                    do {
+                        valid = true;
+                        System.out.print("\tDeposit Amount: ");
+                        depositAmount=SCANNER.nextLine().strip();
+                        if (depositAmount.length() > 4) {
+                            for (int j = 0; j < depositAmount.length() - 3; j++) {
+                                if (!Character.isDigit(depositAmount.charAt(j))) {
+                                    valid = false;
+                                    System.out.printf(ERROR_MSG, "Enter a Valid Amount");
+                                    continue loop4;
+                                }
+                            }
+                            if (!(depositAmount.charAt((depositAmount.length() - 3)) == '.' || Character
+                                    .isDigit(depositAmount.charAt(depositAmount.length() - 3)))) {
+                                valid = false;
+                                System.out.printf(ERROR_MSG, "Enter a Valid Amount ");
+                                continue loop4;
+
+                            } else {
+                                for (int j = depositAmount.length() - 2; j < depositAmount
+                                        .length(); j++) {
+                                    if (!Character.isDigit(depositAmount.charAt(j))) {
+                                        valid = false;
+                                        System.out.printf(ERROR_MSG, "Enter a Valid Amount");
+                                        continue loop4;
+                                    }
+                                }
+
+                            }
+                        } else {
+                            for (int j = 0; j < depositAmount.length(); j++) {
+                                if (!Character.isDigit(depositAmount.charAt(j))) {
+                                    valid = false;
+                                    System.out.printf(ERROR_MSG, "Enter a Valid Amount");
+                                    continue loop4;
+                                }
+                            }
+                        }
+                        if (valid) {
+                            depositAmountDouble = Double.parseDouble(depositAmount);
+                            if (depositAmountDouble < 500) {
+                                System.out.printf(ERROR_MSG,
+                                        "Insufficient Deposit Minimum Rs.500.00 Should be deposited");
+                                System.out.print("\tDo you Want to Deposit more?(y/n)");
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;
+                                } else {
+                                    valid = false;
+                                    continue loop1;
+                                }
+                            }
+                        }
+
+                    } while (!valid);
+
 
             }
 
